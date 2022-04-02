@@ -26,6 +26,7 @@ En el caso del teléfono, hemos realizado 2 pruebas:
 - La segunda, con números de teléfono falsos que no cumplen el registro de ningún número de teléfono en el mundo.
 
 ### End to end
-Hemos comprobado también que al enviar los datos, la respuesta obtenida era la adecuada en dos casos:
+Hemos comprobado también que al enviar los datos, la respuesta obtenida era la adecuada en 2 casos, en los que hacemos 2 pruebas en cada uno (4 en total):
 - En primer lugar, comprobamos que al enviar los datos obtenemos una respuesta de OK tanto de status como en el cuerpo si los datos son correctos.
+- Además, comprobamos que si introducimos un dato mal, recibimos KO de vuelta
 - En segundo lugar, comprobamos que al enviar los datos, el HTML que vamos a insertar en el documento también es el adecuado en función de si se han enviado los datos o ha habido algún error.

@@ -14,6 +14,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -26,55 +27,47 @@ public class ProcessControllerTests {
 
     @Autowired
 	private TestRestTemplate restTemplate;
-
-    @MockBean
-    private ProcessController processController;
     
     @Test
-	public void given_app_when_filling_using_right_credentials_then_ok() {
+    public void given_app_when_login_using_right_credencials_then_ok() {
 
-		//Given
-		String address = "http://localhost:" + port + "/api/v1/process-step1";
+        //Given
+        String address = "http://localhost:"+port+"/api/v1/process-step1";
+        ProcessController.DataRequest dataPrueba = new ProcessController.DataRequest("Juan Juanes", "61701688W", "987654321");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ProcessController.DataRequest> request = new HttpEntity<>(dataPrueba, headers);
 
-		DataRequest dataCredential = new DataRequest("Pablo Menendez", "60593409R", "622359863");
-		HttpHeaders headers = new HttpHeaders();
-		HttpEntity<DataRequest> request = new HttpEntity<>(dataCredential, headers);
+        //when
+        ResponseEntity<DataResponse> result = this.restTemplate.postForEntity(address, request, DataResponse.class);
 
-		//When
-		ResponseEntity<DataResponse> result = this.restTemplate.postForEntity(address, request, DataResponse.class);
-
-		//Then
 		String expectedResult = "OK";
 		DataResponse expectedResponse = new DataResponse(expectedResult);
 
         then(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 		//then(result.getBody().result()).isEqualTo(expectedResult);
-        //No termino de entender bien por qué devuelve null
-		then(result.getBody()).isEqualTo(null);
-	}
-
-    /*@Test
-	public void given_app_when_filling_using_right_credentials_then_bad_request() {
+        then(result.getBody()).isEqualTo(expectedResponse);
+    }
+    @Test
+	public void given_app_when_filling_using_right_credentials_then_ko() {
 
 		//Given
-		String address = "http://localhost:" + port + "/api/v1/process-step1";
+        String address = "http://localhost:"+port+"/api/v1/process-step1";
+        ProcessController.DataRequest dataPrueba = new ProcessController.DataRequest("Juan Juanes", "61aB1688W", "987654321");
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ProcessController.DataRequest> request = new HttpEntity<>(dataPrueba, headers);
 
-		DataRequest dataCredential = new DataRequest("", "", "");
-		HttpHeaders headers = new HttpHeaders();
-		HttpEntity<DataRequest> request = new HttpEntity<>(dataCredential, headers);
+        //when
+        ResponseEntity<DataResponse> result = this.restTemplate.postForEntity(address, request, DataResponse.class);
 
-		//When
-		ResponseEntity<DataResponse> result = this.restTemplate.postForEntity(address, request, DataResponse.class);
-
-		//Then
 		String expectedResult = "KO";
 		DataResponse expectedResponse = new DataResponse(expectedResult);
 
-        then(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        then(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 		//then(result.getBody().result()).isEqualTo(expectedResult);
-        //No termino de enternder bien por qué devuelve null
-		then(result.getBody()).isEqualTo(null);
-	}*/
+        then(result.getBody()).isEqualTo(expectedResponse);
+	}
 
     @Test
 	public void given_app_when_filling_using_right_credentials_then_ok_legacy() {
@@ -100,6 +93,33 @@ public class ProcessControllerTests {
         then(result.getStatusCode()).isEqualTo(HttpStatus.OK);
 		//then(result.getBody().result()).isEqualTo(expectedResult);
         //No termino de entender bien por qué devuelve null
-		then(result.getBody()).isEqualTo(null);
+		then(result.getBody()).isEqualTo(expectedResult);
+	}
+
+	@Test
+	public void given_app_when_filling_using_right_credentials_then_ko_legacy() {
+
+		//Given
+		String address = "http://localhost:" + port + "/api/v1/process-step1-legacy";
+
+        MultiValueMap<String, String> datos = new LinkedMultiValueMap<>();
+        datos.add("fullName", "Pablo");
+        datos.add("dni", "605JK409R");
+        datos.add("telefono", "622359863");
+
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<MultiValueMap<String,String>> request = new HttpEntity<>(datos, headers);
+
+		//When
+		ResponseEntity<String> result = this.restTemplate.postForEntity(address, request, String.class);
+
+		//Then
+		String expectedResult = ResponseHTMLGenerator.message2;
+		//DataResponse expectedResponse = new DataResponse(expectedResult);
+
+        then(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+		//then(result.getBody().result()).isEqualTo(expectedResult);
+        //No termino de entender bien por qué devuelve null
+		then(result.getBody()).isEqualTo(expectedResult);
 	}
 }
